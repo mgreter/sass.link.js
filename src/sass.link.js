@@ -304,6 +304,7 @@
 		}
 	}
 
+	var lookedUp = {};
 	var startTime, endTime;
 	startTime = endTime = new Date();
 
@@ -322,12 +323,51 @@
 			}
 			else if (data)
 			{
+
+				// plug into FS lookupPath function
+				Module['stat'] = function (path, opt)
+				{
+
+					// do not fetch directories
+					if (path.match(/\/$/)) return;
+					// only lookup each path once
+					if (lookedUp[path]) return;
+					lookedUp[path] = true;
+
+					var url = document.location.pathname.replace(/\/[^\/]+$/, '') + '/' + path;
+
+					url = url.replace(/\/+/g, '/');
+
+					try
+					{
+						loadFile(url, newFileInfo,
+							function (e, data, fullPath, nfi, wi)
+							{
+								if (!e && data) Sass.writeFile(path, data);
+							}
+						,env, modifyVars);
+					}
+					// happens for local 404
+					catch (e) {}
+				}
+
 				// compile data from response
 				var result = Sass.compile(data);
-				// cerate or replace with new css
-				createCSS(result, sheet, env.lastModified);
-				// print a debug message for the developer
-				log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+
+				if (typeof result == 'object')
+				{
+					// print a debug message for the developer
+					log("error compiling css for " + sheet.href, logLevel.errors);
+					log(result.message + (result.line ? ' @ ' + result.line : '') , logLevel.errors);
+				}
+				else
+				{
+					// cerate or replace with new css
+					createCSS(result, sheet, env.lastModified);
+					// print a debug message for the developer
+					log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+				}
+
 			}
 
 		}, env, modifyVars);
