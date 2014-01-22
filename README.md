@@ -14,3 +14,4 @@ Credits
 
 - https://github.com/less/less.js
 - https://github.com/medialize/sass.js
+- https://github.com/hcatlin/libsass
