@@ -4,8 +4,7 @@ sass.link.js
 Link SCSS stylesheets directly in your browser (compiled via [lib]sass.js)
 
     <link href="example.scss" type="text/scss" />
-    <script src="../lib/sass.js/dist/sass.js"></script>
-    <script src="../src/sass.link.js"></script>
+    <script src="../dist/sass.link.min.js"></script>
 
 It is basically a mashup of less.js and sass.js. The part to replace all referenced
 scss stylesheets inside a page has been taken from less.js. The actual compilation
