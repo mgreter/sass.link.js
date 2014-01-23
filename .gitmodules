@@ -1,3 +1,3 @@
 [submodule "lib/sass.js"]
 	path = lib/sass.js
-	url = https://github.com/medialize/sass.js.git
+	url = https://github.com/mgreter/sass.js.git
