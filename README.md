@@ -22,7 +22,8 @@ abort the loop when one candidate is found.
 Demo
 ====
 
-- http://ocbnet.ch/sass.link.js/example/
+- http://ocbnet.ch/sass.link.js/example/index.html
+- http://ocbnet.ch/sass.link.js/example/demo.html
 
 
 Credits
