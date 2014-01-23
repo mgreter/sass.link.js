@@ -338,8 +338,6 @@
 
 					var url = newFileInfo.currentDirectory + '/' + newPath;
 
-					url = url.replace(/\/+/g, '/');
-
 					try
 					{
 						loadFile(url, newFileInfo,
