@@ -327,16 +327,16 @@
 			{
 
 				// plug into FS lookupPath function
-				Module['stat'] = function (path, opt)
+				Module['stat'] = function (newPath, opt)
 				{
 
 					// do not fetch directories
-					if (path.match(/\/$/)) return;
+					if (newPath.match(/\/$/)) return;
 					// only lookup each path once
-					if (lookedUp[path]) return;
-					lookedUp[path] = true;
+					if (lookedUp[newPath]) return;
+					lookedUp[newPath] = true;
 
-					var url = document.location.pathname.replace(/\/[^\/]+$/, '') + '/' + path;
+					var url = newFileInfo.currentDirectory + '/' + newPath;
 
 					url = url.replace(/\/+/g, '/');
 
@@ -345,7 +345,7 @@
 						loadFile(url, newFileInfo,
 							function (e, data, fullPath, nfi, wi)
 							{
-								if (!e && data) Sass.writeFile(path, data);
+								if (!e && data) Sass.writeFile(newPath, data);
 							}
 						,env, modifyVars);
 					}
