@@ -16,16 +16,15 @@ Imports within scss
 
 I had to patch the sass.js library to have a hook to load requested files by synchronous
 XHR. This is expensive, as libsass tries to stat all possible names and does not seem to
-abort the loop when one candidate is found.
+abort the loop when one candidate is found (seems only true if you set an import path).
 
 
 Compatibility
 =============
 
 Tested with the latest versions of Firefox, Chrome, Opera and Internet Explorer. IE 9
-and below will not work as there is an issue with the way libsass is compiled with
-emscripten. It may be possible to make this work, but I'm uncertain how much
-performance penalty this would mean. It will currently error out with this message:
+and below will not work as it is not possible to compile libsass via emscripten that
+will still be runnable in IE 9 and below. It will currently error out with this message:
 "Assertion failed: Cannot fallback to non-typed array case: Code is too specialized".
 
 

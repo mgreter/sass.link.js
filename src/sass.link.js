@@ -296,6 +296,8 @@
 
 	var typePattern = /^text\/(x-)?scss$/;
 
+	var re_url = /url\(\s*(?:\s*\"(?!data:)($re_quot)\"|\s*\'(?!data:)($re_apo)\'|(?![\"\'])\s*(?!data:)([^\)]*))\s*\)/i;
+
 	var links = document.getElementsByTagName('link');
 
 	for (var i = 0; i < links.length; i++)
@@ -336,7 +338,7 @@
 					if (lookedUp[newPath]) return;
 					lookedUp[newPath] = true;
 
-					var url = newFileInfo.currentDirectory + '/' + newPath;
+					var url = newFileInfo.currentDirectory + newPath;
 
 					try
 					{
@@ -362,6 +364,22 @@
 				}
 				else
 				{
+
+					result = result.replace(re_url, function (match, quot, apo, str)
+					{
+
+						var url = quot || apo || str;
+
+						// relative url
+						if (!url.match(/^\//))
+						{
+							url = newFileInfo.currentDirectory + url;
+						}
+
+						return 'url("' + url + '")';
+
+					}, 'gm');
+
 					// cerate or replace with new css
 					createCSS(result, sheet, env.lastModified);
 					// print a debug message for the developer
