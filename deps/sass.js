@@ -8307,6 +8307,7 @@ var Sass = {
   _files: {},
   _path: '/sass/',
   _module: Module,
+  _fs: FS,
 
   options: function(options) {
     if (typeof options !== 'object') {

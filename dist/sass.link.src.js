@@ -8324,6 +8324,7 @@ var Sass = {
   _files: {},
   _path: '/sass/',
   _module: Module,
+  _fs: FS,
 
   options: function(options) {
     if (typeof options !== 'object') {
@@ -8761,7 +8762,6 @@ return Sass;
 
 	var sheets = [];
 	var inlines = [];
-	var lookedUp = {};
 
 	var typePattern = /^text\/(x-)?scss$/;
 
@@ -8804,8 +8804,7 @@ return Sass;
 				// do not fetch directories
 				if (newPath.match(/\/$/)) return;
 				// only lookup each path once
-				if (lookedUp[newPath]) return;
-				lookedUp[newPath] = true;
+				if (Sass._fs.findObject(newPath)) return;
 
 				// currentDirectory must have traling slash
 				var url = newFileInfo.currentDirectory + newPath;

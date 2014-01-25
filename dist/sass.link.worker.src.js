@@ -397,7 +397,6 @@
 
 	var sheets = [];
 	var inlines = [];
-	var lookedUp = {};
 
 	var typePattern = /^text\/(x-)?scss$/;
 
@@ -440,8 +439,7 @@
 				// do not fetch directories
 				if (newPath.match(/\/$/)) return;
 				// only lookup each path once
-				if (lookedUp[newPath]) return;
-				lookedUp[newPath] = true;
+				if (Sass._fs.findObject(newPath)) return;
 
 				// currentDirectory must have traling slash
 				var url = newFileInfo.currentDirectory + newPath;
