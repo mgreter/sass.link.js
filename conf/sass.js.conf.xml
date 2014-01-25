@@ -45,8 +45,13 @@
 
 	<js id="sass.link.worker.task.js" step="light" >
 
+		<!-- add to compiled code -->
+		<prefix>(function(){</prefix>
+		<prefix path="deps/asm.js" />
+		<suffix>})();</suffix>
+
 		<!-- include javascript libraries -->
-		<input path="lib/sass.js/dist/sass.js" />
+		<input path="deps/sass.js" />
 
 		<!-- include core javascript files -->
 		<input path="src/sass.link.worker.task.js" />
@@ -59,8 +64,13 @@
 
 	<js id="sass.link.js" step="light" >
 
+		<!-- add to compiled code -->
+		<prefix>(function(){</prefix>
+		<prefix path="deps/asm.js" />
+		<suffix>})();</suffix>
+
 		<!-- include javascript libraries -->
-		<input path="lib/sass.js/dist/sass.js" />
+		<input path="deps/sass.js" />
 
 		<!-- include core javascript files -->
 		<input path="src/sass.link.js" />
