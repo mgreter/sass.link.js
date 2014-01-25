@@ -328,8 +328,9 @@
 			else if (data)
 			{
 
-				// plug into FS lookupPath function
-				Module['stat'] = function (newPath, opt)
+				// plug into FS stat function
+				if (typeof Sass._module != 'undefined')
+				Sass._module['stat'] = function (newPath, opt)
 				{
 
 					// do not fetch directories
@@ -338,53 +339,67 @@
 					if (lookedUp[newPath]) return;
 					lookedUp[newPath] = true;
 
+					// currentDirectory must have traling slash
 					var url = newFileInfo.currentDirectory + newPath;
 
 					try
 					{
-						loadFile(url, newFileInfo,
+						loadFile(
+							url, newFileInfo,
 							function (e, data, fullPath, nfi, wi)
-							{
-								if (!e && data) Sass.writeFile(newPath, data);
-							}
-						,env, modifyVars);
+							{ if (!e && data) Sass.writeFile(newPath, data); },
+							env, modifyVars
+						);
 					}
 					// happens for local 404
 					catch (e) {}
 				}
 
 				// compile data from response
-				var result = Sass.compile(data);
-
-				if (typeof result == 'object')
-				{
-					// print a debug message for the developer
-					log("error compiling css for " + sheet.href, logLevel.errors);
-					log(result.message + (result.line ? ' @ ' + result.line : '') , logLevel.errors);
-				}
-				else
+				Sass.compile(data, function (result)
 				{
 
-					result = result.replace(re_url, function (match, quot, apo, str)
+					if (typeof result == 'object')
+					{
+						// print a debug message for the developer
+						log("error compiling css for " + sheet.href, logLevel.errors);
+						log(result.message + (result.line ? ' @ ' + result.line : '') , logLevel.errors);
+					}
+					else
 					{
 
-						var url = quot || apo || str;
-
-						// relative url
-						if (!url.match(/^\//))
+						// rewrite all urls (that are not inline data urls)
+						result = result.replace(re_url, function (match, quot, apo, str)
 						{
-							url = newFileInfo.currentDirectory + url;
-						}
 
-						return 'url("' + url + '")';
+							// get from capture groups
+							var url = quot || apo || str;
 
-					}, 'gm');
+							// relative url
+							if (!url.match(/^\//))
+							{
+								// currentDirectory must have traling slash
+								url = newFileInfo.currentDirectory + url;
+							}
 
-					// cerate or replace with new css
-					createCSS(result, sheet, env.lastModified);
-					// print a debug message for the developer
-					log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
-				}
+							// recreate the url as before
+							if (quot) return 'url("' + url + '")';
+							if (apo) return "url('" + url + "')";
+							return 'url(' + url + ')';
+
+						}, 'gm');
+
+						// cerate or replace with new css
+						createCSS(result, sheet, env.lastModified);
+						// print a debug message for the developer
+						log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+
+					}
+
+				},
+				{
+					newFileInfo: newFileInfo
+				});
 
 			}
 
