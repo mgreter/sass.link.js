@@ -6,21 +6,37 @@
 
 		<link href="example.scss" type="text/scss" />
 
+		<style type="text/scss">
+			BODY { background-color: gray; }
+		</style>
+
 		<link href="test1.scss" type="text/scss" />
 		<link href="test2.scss" type="text/scss" />
 		<link href="test3.scss" type="text/scss" />
 
-		<script src="../dist/sass.link.worker.min.js"></script>
+		<style type="text/scss">
+			BODY { background-color: yellow; }
+		</style>
+
+		<style type="text/scss">
+			BODY { background-image: url(images/bg.gif); }
+		</style>
+
+		<script src="../dist/sass.link.worker.src.js"></script>
 
 	</head>
 
 	<body>
 
-		<div>Hello world</div>
+		<div>red</div>
 
 		<hr>
 
-		<div class="green"></div>
+		<div class="green">green</div>
+
+		<hr>
+
+		yellow
 
 	</body>
 

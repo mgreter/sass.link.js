@@ -293,12 +293,14 @@
 	var env = {};
 
 	var sheets = [];
+	var inlines = [];
 
 	var typePattern = /^text\/(x-)?scss$/;
 
 	var re_url = /url\(\s*(?:\s*\"(?!data:)($re_quot)\"|\s*\'(?!data:)($re_apo)\'|(?![\"\'])\s*(?!data:)([^\)]*))\s*\)/i;
 
 	var links = document.getElementsByTagName('link');
+	var styles = document.getElementsByTagName('style');
 
 	for (var i = 0; i < links.length; i++)
 	{
@@ -308,110 +310,131 @@
 		}
 	}
 
-	var lookedUp = {};
-	var startTime, endTime;
-	startTime = endTime = new Date();
+	for (var i = 0; i < styles.length; i++)
+	{
+		if ( styles[i].type.match(typePattern) )
+		{
+			inlines.push(styles[i]);
+		}
+	}
+
+	function fileLoaded(sheet, e, data, path, newFileInfo, webInfo)
+	{
+
+		if (e)
+		{
+			log(e, logLevel.errors);
+		}
+		else if (data)
+		{
+
+			// plug into FS stat function
+			if (typeof Sass._module != 'undefined')
+			Sass._module['stat'] = function (newPath, opt)
+			{
+
+				// do not fetch directories
+				if (newPath.match(/\/$/)) return;
+				// only lookup each path once
+				if (lookedUp[newPath]) return;
+				lookedUp[newPath] = true;
+
+				// currentDirectory must have traling slash
+				var url = newFileInfo.currentDirectory + newPath;
+
+				try
+				{
+					loadFile(
+						url, newFileInfo,
+						function (e, data, fullPath, nfi, wi)
+						{ if (!e && data) Sass.writeFile(newPath, data); },
+						env, modifyVars
+					);
+				}
+				// happens for local 404
+				catch (e) {}
+			}
+
+			// declare the options
+			var startTime = new Date();
+
+			// compile data from response
+			Sass.compile(data, function (result, options)
+			{
+
+				if (!options) options = {};
+				if (!options.endTime) options.endTime = new Date();
+				if (!options.startTime) options.startTime = startTime;
+
+				if (typeof result == 'object')
+				{
+					// print a debug message for the developer
+					log("error compiling css for " + sheet.href, logLevel.errors);
+					log(result.message + (result.line ? ' @ ' + result.line : '') , logLevel.errors);
+				}
+				else
+				{
+
+					// rewrite all urls (that are not inline data urls)
+					result = result.replace(re_url, function (match, quot, apo, str)
+					{
+
+						// get from capture groups
+						var url = quot || apo || str;
+
+						// relative url
+						if (!url.match(/^\//))
+						{
+							// currentDirectory must have traling slash
+							url = newFileInfo.currentDirectory + url;
+						}
+
+						// recreate the url as before
+						if (quot) return 'url("' + url + '")';
+						if (apo) return "url('" + url + "')";
+						return 'url(' + url + ')';
+
+					}, 'gm');
+
+					// cerate or replace with new css
+					createCSS(result, sheet, env.lastModified);
+					// print a debug message for the developer
+					log("css for " + sheet.href + " generated in " + (options.endTime - options.startTime) + 'ms', logLevel.info);
+
+				}
+
+			},
+			{
+				newFileInfo: newFileInfo
+			});
+
+		}
+
+	}
+
+	for (var i = 0; i < styles.length; i++)
+	{
+		styles[i].href = 'inline:' + i;
+		var data = styles[i].innerHTML;
+		fileLoaded(styles[i], null, data, null, { currentDirectory : '' }, {})
+	}
 
 	for (var i = 0; i < sheets.length; i++)
 	{
 
 		var modifyVars = {};
 
-		loadFile(sheets[i].href, null, function(e, data, path, newFileInfo, webInfo)
+		(function (sheet)
 		{
 
-			var sheet = sheets[i];
+		loadFile(sheet.href, null, function (e, data, path, newFileInfo, webInfo)
+		{
 
-			if (e)
-			{
-				log(e, logLevel.errors);
-			}
-			else if (data)
-			{
-
-				// plug into FS stat function
-				if (typeof Sass._module != 'undefined')
-				Sass._module['stat'] = function (newPath, opt)
-				{
-
-					// do not fetch directories
-					if (newPath.match(/\/$/)) return;
-					// only lookup each path once
-					if (lookedUp[newPath]) return;
-					lookedUp[newPath] = true;
-
-					// currentDirectory must have traling slash
-					var url = newFileInfo.currentDirectory + newPath;
-
-					try
-					{
-						loadFile(
-							url, newFileInfo,
-							function (e, data, fullPath, nfi, wi)
-							{ if (!e && data) Sass.writeFile(newPath, data); },
-							env, modifyVars
-						);
-					}
-					// happens for local 404
-					catch (e) {}
-				}
-
-				// declare the options
-				var startTime = new Date();
-
-				// compile data from response
-				Sass.compile(data, function (result, options)
-				{
-
-					if (!options) options = {};
-					if (!options.endTime) options.endTime = new Date();
-					if (!options.startTime) options.startTime = startTime;
-
-					if (typeof result == 'object')
-					{
-						// print a debug message for the developer
-						log("error compiling css for " + sheet.href, logLevel.errors);
-						log(result.message + (result.line ? ' @ ' + result.line : '') , logLevel.errors);
-					}
-					else
-					{
-
-						// rewrite all urls (that are not inline data urls)
-						result = result.replace(re_url, function (match, quot, apo, str)
-						{
-
-							// get from capture groups
-							var url = quot || apo || str;
-
-							// relative url
-							if (!url.match(/^\//))
-							{
-								// currentDirectory must have traling slash
-								url = newFileInfo.currentDirectory + url;
-							}
-
-							// recreate the url as before
-							if (quot) return 'url("' + url + '")';
-							if (apo) return "url('" + url + "')";
-							return 'url(' + url + ')';
-
-						}, 'gm');
-
-						// cerate or replace with new css
-						createCSS(result, sheet, env.lastModified);
-						// print a debug message for the developer
-						log("css for " + sheet.href + " generated in " + (options.endTime - options.startTime) + 'ms', logLevel.info);
-
-					}
-
-				},
-				{
-					newFileInfo: newFileInfo
-				});
-
-			}
+				fileLoaded(sheet, e, data, path, newFileInfo, webInfo)
 
 		}, env, modifyVars);
+
+		})(sheets[i]);
 
 		endTime = new Date();
 
