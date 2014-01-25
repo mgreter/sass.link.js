@@ -397,6 +397,7 @@
 
 	var sheets = [];
 	var inlines = [];
+	var lookupCache = {};
 
 	var typePattern = /^text\/(x-)?scss$/;
 
@@ -433,9 +434,12 @@
 
 			// plug into FS stat function
 			if (typeof Sass._module != 'undefined')
-			Sass._module['stat'] = function (newPath, opt)
+			Sass._module['loader'] = function (newPath, opt)
 			{
 
+				// only lookup once
+				if (lookupCache[newPath]) return;
+				lookupCache[newPath] = true;
 				// do not fetch directories
 				if (newPath.match(/\/$/)) return;
 				// only lookup each path once
@@ -443,6 +447,7 @@
 
 				// currentDirectory must have traling slash
 				var url = newFileInfo.currentDirectory + newPath;
+				url = url.replace(/(?:(^.*?:\/)\/+|\/+)/g, '\$1/');
 
 				try
 				{
