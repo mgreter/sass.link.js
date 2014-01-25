@@ -8782,11 +8782,12 @@ return Sass;
 	for (var i = 0; i < sheets.length; i++)
 	{
 
-		var sheet = sheets[i];
 		var modifyVars = {};
 
-		loadFile(sheet.href, null, function(e, data, path, newFileInfo, webInfo)
+		loadFile(sheets[i].href, null, function(e, data, path, newFileInfo, webInfo)
 		{
+
+			var sheet = sheets[i];
 
 			if (e)
 			{
@@ -8822,9 +8823,16 @@ return Sass;
 					catch (e) {}
 				}
 
+				// declare the options
+				var startTime = new Date();
+
 				// compile data from response
-				Sass.compile(data, function (result)
+				Sass.compile(data, function (result, options)
 				{
+
+					if (!options) options = {};
+					if (!options.endTime) options.endTime = new Date();
+					if (!options.startTime) options.startTime = startTime;
 
 					if (typeof result == 'object')
 					{
@@ -8859,7 +8867,7 @@ return Sass;
 						// cerate or replace with new css
 						createCSS(result, sheet, env.lastModified);
 						// print a debug message for the developer
-						log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+						log("css for " + sheet.href + " generated in " + (options.endTime - options.startTime) + 'ms', logLevel.info);
 
 					}
 

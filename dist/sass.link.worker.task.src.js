@@ -8740,6 +8740,7 @@ return Sass;
 
 	onmessage = function (event) {
 	  var result;
+	  var startTime = new Date();
 	  switch (event.data.command) {
 	    case 'compile':
 	      newFileInfo = event.data.options.newFileInfo;
@@ -8768,6 +8769,8 @@ return Sass;
 
 	  postMessage({
 	    id: event.data.id,
+	    startTime: startTime,
+	    endTime: new Date(),
 	    result: result
 	  });
 	};

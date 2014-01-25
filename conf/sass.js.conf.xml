@@ -25,7 +25,7 @@
 	<js id="sass.link.worker.js" step="light" >
 
 		<!-- include javascript libraries -->
-		<input path="lib/sass.js/dist/sass.worker.js" />
+		<input path="deps/worker.js" />
 
 		<!-- insert javascript code to load worker task -->
 		<input>
