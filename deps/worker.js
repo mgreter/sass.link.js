@@ -87,6 +87,7 @@
 
       Sass._worker = new Worker(workerUrl);
       Sass._worker.addEventListener('message', function(event) {
+        if (event.data.error) console.log.apply(this, event.data.error);
         Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result, event.data);
         delete Sass._callbacks[event.data.id];
       }, false);
