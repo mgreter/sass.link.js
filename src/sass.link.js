@@ -315,11 +315,12 @@
 	for (var i = 0; i < sheets.length; i++)
 	{
 
-		var sheet = sheets[i];
 		var modifyVars = {};
 
-		loadFile(sheet.href, null, function(e, data, path, newFileInfo, webInfo)
+		loadFile(sheets[i].href, null, function(e, data, path, newFileInfo, webInfo)
 		{
+
+			var sheet = sheets[i];
 
 			if (e)
 			{
