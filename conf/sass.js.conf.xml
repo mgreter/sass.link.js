@@ -1,0 +1,74 @@
+<xml>
+
+	<!-- include default configuration file (relative to this file) -->
+	<include src="{EXT}/conf/common.conf.xml" />
+
+	<!-- default configuration -->
+	<config>
+
+		<!-- define a current working directory -->
+		<!-- you can adjust this also in the xml config -->
+		<directory>{CONF}/..</directory>
+
+		<!-- disable headers -->
+		<headtmpl></headtmpl>
+
+		<!-- disable crc file -->
+		<crc-file>0</crc-file>
+
+		<!-- disable comments -->
+		<crc-comment>0</crc-comment>
+		<head-comment>0</head-comment>
+
+	</config>
+
+	<js id="sass.link.worker.js" step="light" >
+
+		<!-- include javascript libraries -->
+		<input path="lib/sass.js/dist/sass.worker.js" />
+
+		<!-- insert javascript code to load worker task -->
+		<input>
+			var scripts = document.getElementsByTagName("script"),
+			    src = scripts[scripts.length-1].src;
+			Sass.initialize(src.replace(/\.worker\./, '.worker.task.'));
+		</input>
+
+		<!-- include core javascript files -->
+		<input path="src/sass.link.js" />
+
+		<!-- generate different output versions -->
+		<output path="dist/sass.link.worker.src.js" target="join" />
+		<output path="dist/sass.link.worker.min.js" target="compile" />
+
+	</js>
+
+	<js id="sass.link.worker.task.js" step="light" >
+
+		<!-- include javascript libraries -->
+		<input path="lib/sass.js/dist/sass.js" />
+
+		<!-- include core javascript files -->
+		<input path="src/sass.link.worker.task.js" />
+
+		<!-- generate different output versions -->
+		<output path="dist/sass.link.worker.task.src.js" target="join" />
+		<output path="dist/sass.link.worker.task.min.js" target="compile" />
+
+	</js>
+
+	<js id="sass.link.js" step="light" >
+
+		<!-- include javascript libraries -->
+		<input path="lib/sass.js/dist/sass.js" />
+
+		<!-- include core javascript files -->
+		<input path="src/sass.link.js" />
+
+		<!-- generate different output versions -->
+		<output path="dist/sass.link.src.js" target="join" />
+		<output path="dist/sass.link.min.js" target="compile" />
+
+	</js>
+
+</xml>
