@@ -33,6 +33,7 @@ Demo
 
 - http://ocbnet.ch/sass.link.js/example/index.html
 - http://ocbnet.ch/sass.link.js/example/demo.html
+- http://ocbnet.ch/sass.link.js/example/worker.html
 
 
 Credits
