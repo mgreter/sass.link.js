@@ -3481,6 +3481,11 @@ function copyTempDouble(ptr) {
       },createLazyFile:function (parent, name, url, canRead, canWrite) {
         if (typeof XMLHttpRequest !== 'undefined') {
           if (!ENVIRONMENT_IS_WORKER) throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc';
+          // Find length
+          var xhr = new XMLHttpRequest();
+          xhr.open('HEAD', url, false);
+          xhr.send(null);
+          if (xhr.status >= 400) return;
           // Lazy chunked Uint8Array (implements get and length from Uint8Array). Actual getting is abstracted away for eventual reuse.
           function LazyUint8Array() {
             this.lengthKnown = false;
@@ -3498,10 +3503,6 @@ function copyTempDouble(ptr) {
             this.getter = getter;
           }
           LazyUint8Array.prototype.cacheLength = function LazyUint8Array_cacheLength() {
-              // Find length
-              var xhr = new XMLHttpRequest();
-              xhr.open('HEAD', url, false);
-              xhr.send(null);
               if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) throw new Error("Couldn't load " + url + ". Status: " + xhr.status);
               var datalength = Number(xhr.getResponseHeader("Content-length"));
               var header;
