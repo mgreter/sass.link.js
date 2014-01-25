@@ -2361,6 +2361,8 @@ function copyTempDouble(ptr) {
         return ___setErrNo(e.errno);
       },lookupPath:function (path, opts) {
         path = PATH.resolve(FS.cwd(), path);
+        if (typeof Module['loader'] == "function")
+        { Module['loader'].call(this, path, opts); }
         opts = opts || { recurse_count: 0 };
         if (opts.recurse_count > 8) {  // max recursive lookup of 8
           throw new FS.ErrnoError(ERRNO_CODES.ELOOP);
@@ -2879,8 +2881,6 @@ function copyTempDouble(ptr) {
         }
         return link.node_ops.readlink(link);
       },stat:function (path, dontFollow) {
-        if (typeof Module['stat'] == "function")
-        { Module['stat'].apply(this, arguments); }
         var lookup = FS.lookupPath(path, { follow: !dontFollow });
         var node = lookup.node;
         if (!node.node_ops.getattr) {

@@ -8,7 +8,7 @@
 	var startTime = new Date();
 
 	// hook into Sass module
-	Sass._module['stat'] = function (newPath)
+	Sass._module['loader'] = function (newPath)
 	{
 		// currentDirectory must have traling slash
 		var url = newFileInfo.currentDirectory + newPath;

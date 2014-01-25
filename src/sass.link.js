@@ -330,7 +330,7 @@
 
 			// plug into FS stat function
 			if (typeof Sass._module != 'undefined')
-			Sass._module['stat'] = function (newPath, opt)
+			Sass._module['loader'] = function (newPath, opt)
 			{
 
 				// do not fetch directories
