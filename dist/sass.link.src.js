@@ -8761,6 +8761,7 @@ return Sass;
 
 	var sheets = [];
 	var inlines = [];
+	var lookedUp = {};
 
 	var typePattern = /^text\/(x-)?scss$/;
 
@@ -8814,7 +8815,11 @@ return Sass;
 					loadFile(
 						url, newFileInfo,
 						function (e, data, fullPath, nfi, wi)
-						{ if (!e && data) Sass.writeFile(newPath, data); },
+						{
+							var paths = newPath.split('/');
+							paths.pop(); Sass._createPath(paths);
+							if (!e && data) Sass.writeFile(newPath, data);
+						},
 						env, modifyVars
 					);
 				}
@@ -8879,11 +8884,21 @@ return Sass;
 
 	}
 
-	for (var i = 0; i < styles.length; i++)
+	var startTime = new Date();
+
+	var hrefParts = extractUrlParts(document.location.href);
+	var href      = hrefParts.url;
+	var fileInfo = {
+	    currentDirectory: hrefParts.path,
+	    filename: href
+	};
+
+	for (var i = 0, l = styles.length; i < l; i++)
 	{
-		styles[i].href = 'inline:' + i;
+		styles[i].title = 'inline:' + i;
+		styles[i].href = document.location.href;
 		var data = styles[i].innerHTML;
-		fileLoaded(styles[i], null, data, null, { currentDirectory : '' }, {})
+		fileLoaded(styles[i], null, data, null, fileInfo, {})
 	}
 
 	for (var i = 0; i < sheets.length; i++)

@@ -87,6 +87,7 @@
 
       Sass._worker = new Worker(workerUrl);
       Sass._worker.addEventListener('message', function(event) {
+        if (event.data.error) console.log.apply(this, event.data.error);
         Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result, event.data);
         delete Sass._callbacks[event.data.id];
       }, false);
@@ -396,6 +397,7 @@
 
 	var sheets = [];
 	var inlines = [];
+	var lookedUp = {};
 
 	var typePattern = /^text\/(x-)?scss$/;
 
@@ -449,7 +451,11 @@
 					loadFile(
 						url, newFileInfo,
 						function (e, data, fullPath, nfi, wi)
-						{ if (!e && data) Sass.writeFile(newPath, data); },
+						{
+							var paths = newPath.split('/');
+							paths.pop(); Sass._createPath(paths);
+							if (!e && data) Sass.writeFile(newPath, data);
+						},
 						env, modifyVars
 					);
 				}
@@ -514,11 +520,21 @@
 
 	}
 
-	for (var i = 0; i < styles.length; i++)
+	var startTime = new Date();
+
+	var hrefParts = extractUrlParts(document.location.href);
+	var href      = hrefParts.url;
+	var fileInfo = {
+	    currentDirectory: hrefParts.path,
+	    filename: href
+	};
+
+	for (var i = 0, l = styles.length; i < l; i++)
 	{
-		styles[i].href = 'inline:' + i;
+		styles[i].title = 'inline:' + i;
+		styles[i].href = document.location.href;
 		var data = styles[i].innerHTML;
-		fileLoaded(styles[i], null, data, null, { currentDirectory : '' }, {})
+		fileLoaded(styles[i], null, data, null, fileInfo, {})
 	}
 
 	for (var i = 0; i < sheets.length; i++)
