@@ -8892,12 +8892,14 @@ return Sass;
 	    filename: href
 	};
 
-	for (var i = 0, l = styles.length; i < l; i++)
+	for (var i = 0, l = inlines.length; i < l; i++)
 	{
-		styles[i].title = 'inline:' + i;
-		styles[i].href = document.location.href;
-		var data = styles[i].innerHTML;
-		fileLoaded(styles[i], null, data, null, fileInfo, {})
+		inlines[i].title = 'inline:' + i;
+		inlines[i].href = document.location.href;
+		var data = inlines[i].innerHTML;
+		var base = inlines[i].getAttribute('base');
+		if (base) fileInfo.currentDirectory += base.replace(/\/+$/, '') + '/';
+		fileLoaded(inlines[i], null, data, null, fileInfo, {})
 	}
 
 	for (var i = 0; i < sheets.length; i++)
