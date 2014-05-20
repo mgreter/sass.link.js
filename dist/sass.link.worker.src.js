@@ -106,7 +106,7 @@
 (function()
 {
 
-	'strict';
+	'use strict';
 
 	if (typeof window.scss == 'undefined') window.scss = { env: 'development' };
 
@@ -400,7 +400,7 @@
 
 	var typePattern = /^text\/(x-)?scss$/;
 
-	var re_url = /url\(\s*(?:\s*\"(?!data:)($re_quot)\"|\s*\'(?!data:)($re_apo)\'|(?![\"\'])\s*(?!data:)([^\)]*))\s*\)/i;
+	var re_url = /url\(\s*(?:\"(?!data:)((?:[^\"\\]+|\\.)*)\"|\'(?!data:)((?:[^\'\\]+|\\.)*)\'|(?![\"\'])\s*(?!data:)([^\)]*))\s*\)/gi;
 
 	var links = document.getElementsByTagName('link');
 	var styles = document.getElementsByTagName('style');
@@ -554,7 +554,7 @@
 
 		})(sheets[i]);
 
-		endTime = new Date();
+		// endTime = new Date();
 
 	}
 
