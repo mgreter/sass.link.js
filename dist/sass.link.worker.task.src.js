@@ -978,7 +978,7 @@ function enlargeMemory() {
   abort('Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value ' + TOTAL_MEMORY + ', or (2) set Module.TOTAL_MEMORY before the program runs.');
 }
 var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
-var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216;
+var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216 * 2;
 var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152;
 var totalMemory = 4096;
 while (totalMemory < TOTAL_MEMORY || totalMemory < 2*TOTAL_STACK) {
@@ -8713,8 +8713,9 @@ return Sass;
 			if (lookedUp[newPath]) return;
 			lookedUp[newPath] = true;
 
-			// currentDirectory must have traling slash
-			var url = newFileInfo.currentDirectory + newPath;
+			var dir = newFileInfo.currentDirectory;
+			var url = dir.replace(/[\/\\]+$/, '') + '/';
+			url += newPath.replace(/^[\/\\]+/, '');
 
 			try
 			{
@@ -8722,8 +8723,15 @@ return Sass;
 					url, newFileInfo,
 					function (e, data, fullPath, nfi, wi)
 					{
-
-						if (!e && data) Sass.writeFile(newPath, data); },
+						if (!e && data)
+						{
+							// create the file path
+							var paths = newPath.split('/');
+							paths.pop(); Sass._createPath(paths);
+							// write to the virtual fs
+							Sass.writeFile(newPath, data);
+						}
+					},
 					scss.env, modifyVars
 				);
 			}

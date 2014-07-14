@@ -961,7 +961,7 @@ function enlargeMemory() {
   abort('Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value ' + TOTAL_MEMORY + ', or (2) set Module.TOTAL_MEMORY before the program runs.');
 }
 var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
-var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216;
+var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216 * 2;
 var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152;
 var totalMemory = 4096;
 while (totalMemory < TOTAL_MEMORY || totalMemory < 2*TOTAL_STACK) {

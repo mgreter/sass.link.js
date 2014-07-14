@@ -441,8 +441,9 @@
 				// only lookup each path once
 				if (Sass._fs.findObject(newPath)) return;
 
-				// currentDirectory must have traling slash
-				var url = newFileInfo.currentDirectory + newPath;
+				var dir = newFileInfo.currentDirectory;
+				var url = dir.replace(/[\/\\]+$/, '') + '/';
+				url += newPath.replace(/^[\/\\]+/, '');
 
 				try
 				{
@@ -450,9 +451,14 @@
 						url, newFileInfo,
 						function (e, data, fullPath, nfi, wi)
 						{
-							var paths = newPath.split('/');
-							paths.pop(); Sass._createPath(paths);
-							if (!e && data) Sass.writeFile(newPath, data);
+							if (!e && data)
+							{
+								// create the file path
+								var paths = newPath.split('/');
+								paths.pop(); Sass._createPath(paths);
+								// write to the virtual fs
+								Sass.writeFile(newPath, data);
+							}
 						},
 						env, modifyVars
 					);
