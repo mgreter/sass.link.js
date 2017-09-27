@@ -22,55 +22,17 @@
 
 	</config>
 
-	<js id="sass.link.worker.js" step="light" >
+	<js id="sass.link.js" step="light" >
 
 		<!-- include javascript libraries -->
-		<input path="deps/worker.js" />
+		<input path="lib/sass.js/dist/sass.js" />
 
 		<!-- insert javascript code to load worker task -->
 		<input>
 			var scripts = document.getElementsByTagName("script"),
-			    src = scripts[scripts.length-1].src;
-			Sass.initialize(src.replace(/\.worker\./, '.worker.task.'));
+				src = scripts[scripts.length-1].src;
+			Sass.setWorkerUrl(src.replace(/\.link\./, '.link.worker.'));
 		</input>
-
-		<!-- include core javascript files -->
-		<input path="src/sass.link.js" />
-
-		<!-- generate different output versions -->
-		<output path="dist/sass.link.worker.src.js" target="join" />
-		<output path="dist/sass.link.worker.min.js" target="compile" />
-
-	</js>
-
-	<js id="sass.link.worker.task.js" step="light" >
-
-		<!-- add to compiled code -->
-		<prefix>(function(){</prefix>
-		<prefix path="deps/asm.js" />
-		<suffix>})();</suffix>
-
-		<!-- include javascript libraries -->
-		<input path="deps/sass.js" />
-
-		<!-- include core javascript files -->
-		<input path="src/sass.link.worker.task.js" />
-
-		<!-- generate different output versions -->
-		<output path="dist/sass.link.worker.task.src.js" target="join" />
-		<output path="dist/sass.link.worker.task.min.js" target="compile" />
-
-	</js>
-
-	<js id="sass.link.js" step="light" >
-
-		<!-- add to compiled code -->
-		<prefix>(function(){</prefix>
-		<prefix path="deps/asm.js" />
-		<suffix>})();</suffix>
-
-		<!-- include javascript libraries -->
-		<input path="deps/sass.js" />
 
 		<!-- include core javascript files -->
 		<input path="src/sass.link.js" />
@@ -78,6 +40,17 @@
 		<!-- generate different output versions -->
 		<output path="dist/sass.link.src.js" target="join" />
 		<output path="dist/sass.link.min.js" target="compile" />
+
+	</js>
+
+	<js id="sass.link.worker.js" step="light" >
+
+		<!-- include javascript libraries -->
+		<input path="lib/sass.js/dist/sass.worker.js" />
+
+		<!-- generate different output versions -->
+		<output path="dist/sass.link.worker.src.js" target="join" />
+		<output path="dist/sass.link.worker.min.js" target="compile" />
 
 	</js>
 
