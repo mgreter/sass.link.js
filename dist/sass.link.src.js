@@ -203,7 +203,7 @@ return Sass;
 
 			var scripts = document.getElementsByTagName("script"),
 				src = scripts[scripts.length-1].src;
-			Sass.setWorkerUrl(src.replace(/\.link\./, '.link.worker.'));
+			Sass.setWorkerUrl(src.replace(/\.link\.(src\.|min\.)?js(:?$|\?)/, '.link.worker.$1js'));
 		;
 /* heavily copied from less.js */
 
